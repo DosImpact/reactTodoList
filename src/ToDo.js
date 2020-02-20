@@ -67,13 +67,14 @@ const ToDo = () => {
   const minInput = useInput(0);
   const secInput = useInput(0);
   const [todoList, setTodoList] = useState({});
+
   const _submit = e => {
     e.preventDefault();
 
     const totalTime = {
-      h: parseInt(hourInput.value),
-      m: parseInt(minInput.value),
-      s: parseInt(secInput.value)
+      h: isNaN(parseInt(hourInput.value)) ? 0 : parseInt(hourInput.value),
+      m: isNaN(parseInt(minInput.value)) ? 0 : parseInt(minInput.value),
+      s: isNaN(parseInt(secInput.value)) ? 0 : parseInt(secInput.value)
     };
     console.log(totalTime);
     _createTodo({ content: TodoInput.value, totalTime });
@@ -119,6 +120,7 @@ const ToDo = () => {
   };
 
   const loadTodoList = () => {
+    console.log("loading...");
     const current = localStorage.getItem("TODOLIST");
     if (current !== null) {
       setTodoList(JSON.parse(current));

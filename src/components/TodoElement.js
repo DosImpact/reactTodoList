@@ -60,21 +60,16 @@ const Input = styled.input`
   margin: 20px;
 `;
 
-const TodoElement = ({
-  id,
-  content,
-  isComplete,
-  createAt,
-  updateTodo,
-  deleteTodo,
-  completeAt,
-  totalTime
-}) => {
-  const [data, setData] = useState(content);
-  const [_isComplete, _setisComplete] = useState(isComplete);
-  const [_completeAt, _setCompleteAt] = useState(completeAt || Date.now());
+const TodoElement = props => {
+  const { id, createAt, updateTodo, deleteTodo, totalTime } = props;
+  const [data, setData] = useState(props.content);
+  const [_isComplete, _setisComplete] = useState(props.isComplete);
+  const [_completeAt, _setCompleteAt] = useState(
+    props.completeAt || Date.now()
+  );
   const [isEdit, setIsEdit] = useState(false);
   const [timeinterval, setTimeinterval] = useState({ h: 0, m: 0, s: 0 });
+
   const _handleChange = e => {
     setData(e.target.value);
   };
@@ -102,7 +97,6 @@ const TodoElement = ({
       m: Math.floor(m),
       s: Math.floor(s)
     });
-    console.log(timeinterval);
   }, [_isComplete]);
 
   const isfail =
@@ -135,18 +129,17 @@ const TodoElement = ({
             isfail ? (
               <Text fail success>
                 예상시간 : {totalTime.h}H {totalTime.m}M {totalTime.s}S {"\n"}
-                걸린시간 :{timeinterval.h}H {timeinterval.m}M{timeinterval.s}S
+                걸린시간 :{timeinterval.h}H {timeinterval.m}M {timeinterval.s}S
               </Text>
             ) : (
               <Text success>
                 예상시간 : {totalTime.h}H {totalTime.m}M {totalTime.s}S {"\n"}
-                걸린시간 :{timeinterval.h}H {timeinterval.m}M{timeinterval.s}S
+                걸린시간 :{timeinterval.h}H {timeinterval.m}M {timeinterval.s}S
               </Text>
             )
           ) : (
             <Text>
               예상시간 : {totalTime.h}H {totalTime.m}M {totalTime.s}S {"\n"}
-              걸린시간 :{timeinterval.h}H {timeinterval.m}M{timeinterval.s}S
             </Text>
           )}
           <Button onClick={() => setIsEdit(!isEdit)}>
