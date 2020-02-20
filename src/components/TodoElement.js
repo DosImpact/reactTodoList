@@ -62,6 +62,7 @@ const Input = styled.input`
 
 const TodoElement = props => {
   const { id, createAt, updateTodo, deleteTodo, totalTime } = props;
+
   const [data, setData] = useState(props.content);
   const [_isComplete, _setisComplete] = useState(props.isComplete);
   const [_completeAt, _setCompleteAt] = useState(

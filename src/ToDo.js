@@ -62,8 +62,8 @@ const Input = styled.input`
 `;
 
 const ToDo = () => {
-  const TodoInput = useInput();
-  const hourInput = useInput(0);
+  const TodoInput = useInput(); //FB) 변수 소문자 시작해라.
+  const hourInput = useInput(0); //FB) useInput에서 초기값 안받는데, 의미없는 인자 전달.....
   const minInput = useInput(0);
   const secInput = useInput(0);
   const [todoList, setTodoList] = useState({});
@@ -89,10 +89,10 @@ const ToDo = () => {
         isComplete: false,
         createAt: ID,
         completeAt: null,
-        totalTime: totalTime
+        totalTime
       }
     };
-    setTodoList({ ...todoList, ...newTodo });
+    setTodoList({ ...todoList, ...newTodo }); // +)      setTodoList({ ...todoList, [ID]: newTodo }); 이런 방법도!
   };
   const _updateTodo = ({
     id,
@@ -114,25 +114,24 @@ const ToDo = () => {
   };
 
   const _deleteTodo = id => {
-    const deletedtodoList = todoList;
-    delete deletedtodoList[id];
-    setTodoList({ ...deletedtodoList });
+    // const deletedtodoList = todoList;
+    // delete deletedtodoList[id];
+    // setTodoList({ ...deletedtodoList });
+
+    //FB) 다음 처럼 바꾸면 얼마나 좋아.
+    delete todoList[id];
+    setTodoList({ ...todoList });
   };
 
   const loadTodoList = () => {
-    console.log("loading...");
     const current = localStorage.getItem("TODOLIST");
     if (current !== null) {
       setTodoList(JSON.parse(current));
     }
   };
 
-  const init = () => {
-    loadTodoList();
-  };
-
   useEffect(() => {
-    init();
+    loadTodoList();
     return () => {};
   }, []);
 
@@ -143,7 +142,9 @@ const ToDo = () => {
   return (
     <Container>
       <TitleBox width="50vw" height="20vh">
-        <TitleElement width="100px" height="100px">
+        {/**
+        
+         <TitleElement width="100px" height="100px">
           TO
         </TitleElement>
         <TitleElement width="100px" height="100px">
@@ -152,6 +153,13 @@ const ToDo = () => {
         <TitleElement width="100px" height="100px">
           LIST
         </TitleElement>
+      
+          */}
+        {["TO", "DO", "LIST"].map(e => (
+          <TitleElement width="100px" height="100px">
+            {e}
+          </TitleElement>
+        ))}
       </TitleBox>
       <form onSubmit={_submit}>
         <Input
@@ -185,8 +193,11 @@ const ToDo = () => {
         <Button>ADD</Button>
       </form>
       <div>
+        {
+          //FB) Object.values(todoList).map((e, idx) => .. todoList가 없는경우라면!! 물론 초기값을 {} 해서 애러는 안난다.
+        }
         {todoList
-          ? Object.values(todoList).map((e, idx) => (
+          ? Object.values(todoList || {}).map((e, idx) => (
               <TodoElement
                 key={idx}
                 id={e.id}
@@ -206,15 +217,12 @@ const ToDo = () => {
 };
 
 export default ToDo;
-/**
- * input으로 todolist 만들수 있다,
- *
- */
 
 const useInput = () => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(""); //FB)useInput 훅 초기값 설정
   const onChange = e => {
     if (e.target.value !== null) {
+      // FB) null이 들어올수있나 ?! 아니다... 생략
       setValue(e.target.value);
     }
   };
