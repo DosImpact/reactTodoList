@@ -10,6 +10,15 @@ const Container = styled.div`
   align-items: center;
   padding: 30px;
 `;
+const Button = styled.button`
+  all: unset;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #c0c0c0;
+  box-shadow: inset 10px 10px 20px #a3a3a3, inset -10px -10px 20px #dddddd;
+  margin: 0px 5px;
+`;
 
 const TitleBox = styled.div`
   width: ${props => props.width};
@@ -54,26 +63,51 @@ const Input = styled.input`
 
 const ToDo = () => {
   const TodoInput = useInput();
+  const hourInput = useInput(0);
+  const minInput = useInput(0);
+  const secInput = useInput(0);
   const [todoList, setTodoList] = useState({});
   const _submit = e => {
     e.preventDefault();
-    _createTodo(TodoInput.value);
+
+    const totalTime = {
+      h: parseInt(hourInput.value),
+      m: parseInt(minInput.value),
+      s: parseInt(secInput.value)
+    };
+    console.log(totalTime);
+    _createTodo({ content: TodoInput.value, totalTime });
     TodoInput.setValue("");
   };
-  const _createTodo = content => {
+  const _createTodo = ({ content, totalTime }) => {
     const ID = Date.now();
     const newTodo = {
-      [ID]: { id: ID, content: content, isComplete: false, createAt: ID }
+      [ID]: {
+        id: ID,
+        content: content,
+        isComplete: false,
+        createAt: ID,
+        completeAt: null,
+        totalTime: totalTime
+      }
     };
     setTodoList({ ...todoList, ...newTodo });
   };
-  const _updateTodo = ({ id, content = null, isComplete = null }) => {
+  const _updateTodo = ({
+    id,
+    content = null,
+    isComplete = null,
+    completeAt = null
+  }) => {
     let updatedTodo = todoList;
     if (content !== null) {
       updatedTodo[id].content = content;
     }
     if (isComplete !== null) {
       updatedTodo[id].isComplete = isComplete;
+    }
+    if (isComplete !== null) {
+      updatedTodo[id].completeAt = completeAt;
     }
     setTodoList({ ...todoList, ...updatedTodo });
   };
@@ -119,12 +153,34 @@ const ToDo = () => {
       </TitleBox>
       <form onSubmit={_submit}>
         <Input
-          width="80vw"
+          width="50vw"
           height="100px"
           value={TodoInput.value}
           onChange={TodoInput.onChange}
           placeholder="add to do"
         ></Input>
+        <Input
+          width="100px"
+          height="100px"
+          value={hourInput.value}
+          onChange={hourInput.onChange}
+          placeholder="hours"
+        ></Input>
+        <Input
+          width="100px"
+          height="100px"
+          value={minInput.value}
+          onChange={minInput.onChange}
+          placeholder="Minute"
+        ></Input>
+        <Input
+          width="100px"
+          height="100px"
+          value={secInput.value}
+          onChange={secInput.onChange}
+          placeholder="Second"
+        ></Input>
+        <Button>ADD</Button>
       </form>
       <div>
         {todoList
@@ -137,6 +193,8 @@ const ToDo = () => {
                 createAt={e.createAt}
                 updateTodo={_updateTodo}
                 deleteTodo={_deleteTodo}
+                completeAt={e.completeAt}
+                totalTime={e.totalTime}
               />
             ))
           : null}

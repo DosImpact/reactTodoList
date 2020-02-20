@@ -15,9 +15,26 @@ const Text = styled.div`
   margin: 0px 10px;
   width: 30vw;
   height: 50px;
+
   border-radius: 50px;
   background: #c0c0c0;
   box-shadow: 10px 10px 20px #a3a3a3, -10px -10px 20px #dddddd;
+  ${props =>
+    props.success
+      ? `
+      border-radius: 50px;
+  background: #b3ceb6;
+  box-shadow: 10px 10px 20px #a3a3a3, -10px -10px 20px #dddddd;
+          `
+      : null}
+  ${props =>
+    props.fail
+      ? `
+      border-radius: 50px;
+  background: #c8b3ce;
+  box-shadow: 10px 10px 20px #a3a3a3, -10px -10px 20px #dddddd;
+          `
+      : null}
   display: flex;
   align-items: center;
   justify-content: center;
@@ -49,11 +66,15 @@ const TodoElement = ({
   isComplete,
   createAt,
   updateTodo,
-  deleteTodo
+  deleteTodo,
+  completeAt,
+  totalTime
 }) => {
   const [data, setData] = useState(content);
   const [_isComplete, _setisComplete] = useState(isComplete);
+  const [_completeAt, _setCompleteAt] = useState(completeAt || Date.now());
   const [isEdit, setIsEdit] = useState(false);
+  const [timeinterval, setTimeinterval] = useState({ h: 0, m: 0, s: 0 });
   const _handleChange = e => {
     setData(e.target.value);
   };
@@ -63,13 +84,32 @@ const TodoElement = ({
   };
 
   const _handleisComplete = e => {
+    _setCompleteAt(Date.now());
     _setisComplete(!_isComplete);
   };
 
   useEffect(() => {
-    console.log(_isComplete);
-    updateTodo({ id, isComplete: _isComplete });
+    updateTodo({ id, isComplete: _isComplete, completeAt: _completeAt });
+
+    let interval = (_completeAt - createAt) / 1000;
+    const s = interval % 60;
+    interval = interval / 60;
+    const m = interval % 60;
+    interval = interval / 60;
+    const h = interval % 60;
+    setTimeinterval({
+      h: Math.floor(h),
+      m: Math.floor(m),
+      s: Math.floor(s)
+    });
+    console.log(timeinterval);
   }, [_isComplete]);
+
+  const isfail =
+    _isComplete &&
+    timeinterval.h - totalTime.h >= 0 &&
+    timeinterval.m - totalTime.m >= 0 &&
+    timeinterval.s - totalTime.s >= 0;
 
   return (
     <Row>
@@ -91,6 +131,24 @@ const TodoElement = ({
             <span role="img">⭕</span>
           </Button>
           <Text isComplete={_isComplete}>{data}</Text>
+          {_isComplete ? (
+            isfail ? (
+              <Text fail success>
+                예상시간 : {totalTime.h}H {totalTime.m}M {totalTime.s}S {"\n"}
+                걸린시간 :{timeinterval.h}H {timeinterval.m}M{timeinterval.s}S
+              </Text>
+            ) : (
+              <Text success>
+                예상시간 : {totalTime.h}H {totalTime.m}M {totalTime.s}S {"\n"}
+                걸린시간 :{timeinterval.h}H {timeinterval.m}M{timeinterval.s}S
+              </Text>
+            )
+          ) : (
+            <Text>
+              예상시간 : {totalTime.h}H {totalTime.m}M {totalTime.s}S {"\n"}
+              걸린시간 :{timeinterval.h}H {timeinterval.m}M{timeinterval.s}S
+            </Text>
+          )}
           <Button onClick={() => setIsEdit(!isEdit)}>
             <span role="img">🛠</span>
           </Button>
